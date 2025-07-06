@@ -1,0 +1,24 @@
+- name: Hosting website
+  hosts: all
+  tasks:
+    - name: Copy Dockerfile to remote linux server
+      copy:
+        src: Dockerfile
+        dest: .
+    - name: Copy webapp to remote linux server
+      copy:
+        src: webapp.war
+        dest: .
+    - name: Stop the running container
+      command: docker stop customcontainer
+      ignore_errors: true
+    - name: Remove the running container
+      command: docker rm customcontainer
+      ignore_errors: true
+    - name: Remove the image
+      command: docker rmi customimage
+      ignore_errors: true
+    - name: Create image from Dockerfile
+      command: docker build -t customimage .
+    - name: Create container from image and run it
+      command: 'docker run -d -p 8080:8080 --name customcontainer customimage'
